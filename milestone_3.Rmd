@@ -1,0 +1,85 @@
+---
+title: "milestone_3"
+author: "Yanghe"
+date: "2/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+
+library(reprex)
+library(dplyr)
+library(tidyverse)
+library(readr)
+library(janitor)
+library(gt)
+library(ggplot2)
+library(rvest)
+
+covid_19_confirmed <- read_csv("raw-data/confirmed.csv", na = c("undefined", "NA",""))
+covid_19_deaths <- read_csv("raw-data/deaths.csv", na = c("undefined", "NA",""))
+covid_19_recovered <- read_csv("raw-data/recovered.csv", na = c("undefined", "NA",""))
+
+```
+
+```{r chunk1}
+
+table_confirmed <- covid_19_confirmed %>% 
+  select(`Province/State`,`Country/Region`,`2020-02-27`) %>%
+  gt() %>%
+  tab_header(title = "Confirmed cases of COVID-19 in 2020-02-27") %>%
+  tab_footnote(footnote = "Case classifications are based on WHO case definitions for COVID-19.",
+               locations = cells_title(groups = "title")) %>%
+  summary_rows(
+    columns = "2020-02-27",
+    fns = list(
+      Total = "sum")
+  )
+
+table_deaths <- covid_19_deaths %>%
+  select(`Province/State`,`Country/Region`,`2020-02-27`) %>%
+  gt() %>%
+  tab_header(title = "Death cases of COVID-19 in 2020-02-27") %>%
+  tab_footnote(footnote = "Case classifications are based on WHO case definitions for COVID-19.",
+               locations = cells_title(groups = "title")) %>%
+  summary_rows(
+    columns = "2020-02-27",
+    fns = list(
+      Total = "sum")
+  )
+
+table_recovered <- covid_19_recovered %>%
+  select(`Province/State`,`Country/Region`,`2020-02-27`) %>%
+  gt() %>%
+  tab_header(title = "Recovered cases of COVID-19 in 2020-02-27") %>%
+  tab_footnote(footnote = "Case classifications are based on WHO case definitions for COVID-19.",
+               locations = cells_title(groups = "title")) %>%
+  summary_rows(
+    columns = "2020-02-27",
+    fns = list(
+      Total = "sum")
+  )
+
+confirmed_sum <- sum(covid_19_confirmed$`2020-02-27`)
+deaths_sum <- sum(covid_19_deaths$`2020-02-27`)
+recovered_sum <- sum(covid_19_recovered$`2020-02-27`)
+
+current_case <- confirmed_sum-deaths_sum-recovered_sum
+
+```
+
+## Confirmed cases of COVID-19 in 2020-02-27
+`r table_confirmed`
+
+## Death cases of COVID-19 in 2020-02-27
+`r table_deaths`
+
+## Recovered cases of COVID-19 in 2020-02-27 
+`r table_recovered`
+
+## Data Sources:
+1. World Health Organization (WHO): https://www.who.int/
+2. National Health Commission of the People’s Republic of China (NHC): http://www.nhc.gov.cn/xcs/yqtb/list_gzbd.shtml
+3. US CDC: https://www.cdc.gov/coronavirus/2019-ncov/index.html
+
